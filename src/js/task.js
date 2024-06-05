@@ -1,21 +1,25 @@
 class Task {
-  _completed = false;
-  _completedOn = null;
+  completed = false;
 
-  constructor(title, desc, dueDate) {
+  constructor(title, desc, dueDate, priority = "low") {
     this.title = title;
     this.desc = desc;
     this.dueDate = dueDate;
+    this.priority = priority;
   }
 
   markAsCompleted() {
-    if (this._completed) return; // Check if task is already completed
+    if (this.completed) return; // Check if task is already completed
 
-    this._completedOn = new Date();
-    this._completed = true;
+    this.completedOn = new Date();
+    this.completed = true;
   }
-  get completedOn() {
-    return this._completedOn;
+
+  setPriority(newPriority) {
+    const valid = ["low", "medium", "high"];
+    if (valid.includes(newPriority)) {
+      this.priority = newPriority;
+    }
   }
 }
 
