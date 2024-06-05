@@ -5,7 +5,7 @@ const { watchFile } = require("fs");
 module.exports = {
   entry: "./src/js/index.js",
   output: {
-    filename: "[name].bundle.js",
+    filename: "[name].js",
     path: path.resolve(__dirname, "dist"),
     clean: true,
   },
@@ -21,6 +21,10 @@ module.exports = {
   ],
   module: {
     rules: [
+      {
+        test: /\.html$/i,
+        loader: "html-loader",
+      },
       {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
