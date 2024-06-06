@@ -6,9 +6,158 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>hello</h1>
-    <p>funcko</p>
-    <input type="date" name="date" id="date" />
-    <button>click</button>
+    <main class="app">
+      <h1>Will Do <img src="./assets/images/check.png" width="40px" /></h1>
+      <div class="left-panel">
+        <div class="category">
+          <div class="category-btn" data-cat="today">
+            <p>Today</p>
+          </div>
+          <div class="category-btn" data-cat="thisWeek">
+            <p>Week</p>
+          </div>
+          <div class="category-btn" data-cat="thisMonth">
+            <p>Month</p>
+          </div>
+        </div>
+        <div class="project">
+          <h3 class="project-header">
+            Projects <img src="./assets/images/projects.png" width="30px" />
+          </h3>
+          <div class="project-content">
+            <div class="project-btn" data-proj="School">
+              <p>School</p>
+              <img src="./assets/images/delete.png" class="deleteProject-btn" />
+            </div>
+            <div class="project-btn" data-proj="Development">
+              <p>School</p>
+              <img src="./assets/images/delete.png" class="deleteProject-btn" />
+            </div>
+            <div class="project-btn" data-proj="Home">
+              <p>School</p>
+              <img src="./assets/images/delete.png" class="deleteProject-btn" />
+            </div>
+          </div>
+          <div class="project-btn new-project" data-proj="New">
+            <p>New</p>
+          </div>
+        </div>
+      </div>
+      <div class="task-container">
+        <div class="task-content">
+          <div class="task low">
+            <!-- <input type="checkbox" name="complete-btn" class="complete-btn" /> -->
+            <div class="task-text">
+              <h3 class="title">Homework</h3>
+              <p class="decription">
+                Purge homework folder before anyone sees it.
+              </p>
+            </div>
+            <div class="dues-in">
+              <p>Due in <span class="distanceToNow"> Today</span></p>
+            </div>
+            <div class="task-control">
+              <img
+                src="./assets/images/edit.png"
+                alt="edit"
+                class="task-edit"
+              />
+              <img
+                src="./assets/images/delete.png"
+                alt="delete"
+                class="task-delete"
+              />
+            </div>
+          </div>
+          <div class="task medium">
+            <!-- <input type="checkbox" name="complete-btn" class="complete-btn" /> -->
+            <div class="task-text">
+              <h3 class="title">Homework</h3>
+              <p class="decription">
+                Purge homework folder before anyone sees it.
+              </p>
+            </div>
+            <div class="dues-in">
+              <p>Due in <span class="distanceToNow"> 7 days..</span></p>
+            </div>
+            <div class="task-control">
+              <img
+                src="./assets/images/edit.png"
+                alt="edit"
+                class="task-edit"
+              />
+              <img
+                src="./assets/images/delete.png"
+                alt="delete"
+                class="task-delete"
+              />
+            </div>
+          </div>
+          <div class="task high">
+            <!-- <input type="checkbox" name="complete-btn" class="complete-btn" /> -->
+            <div class="task-text">
+              <h3 class="title">Homework</h3>
+              <p class="decription">
+                Purge homework folder before anyone sees it.
+              </p>
+            </div>
+            <div class="dues-in">
+              <p>Due in <span class="distanceToNow"> 3 days..</span></p>
+            </div>
+            <div class="task-control">
+              <img
+                src="./assets/images/edit.png"
+                alt="edit"
+                class="task-edit"
+              />
+              <img
+                src="./assets/images/delete.png"
+                alt="delete"
+                class="task-delete"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="new-task">
+          <img src="./assets/images/add.png" alt="New Task" />
+        </div>
+      </div>
+    </main>
+    <dialog>
+      <form action="modal" method="dialog">
+        <button type="button" class="close-modal-btn">x</button>
+        <!-- <div class="header">
+          <h2>New Task</h2>
+        </div>
+        <label
+          >Task Name:
+          <input type="text" id="name" placeholder="e.g Work" required />
+        </label>
+        <label
+          >Long description:
+          <textarea id="description">I hate my life...</textarea>
+        </label>
+        <label
+          >Due date:
+          <input type="date" id="date" required />
+        </label>
+        <label
+          >Priority:
+          <select id="priority" name="priority">
+            <option value="1">Low</option>
+            <option value="2">Medium</option>
+            <option value="3">High</option>
+          </select>
+        </label> -->
+        <div class="header">
+          <h2>New Project</h2>
+        </div>
+        <label
+          >Project name :
+          <input type="text" id="name" placeholder="Project Name" required
+        /></label>
+        <button type="submit">Confirm</button>
+      </form>
+    </dialog>
   </body>
 </html>
