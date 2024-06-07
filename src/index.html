@@ -23,7 +23,16 @@
       </div>
     </header>
     <main class="task-container">
-      <h2 class="task-container__header">Your tasks</h2>
+      <div class="task-container__header">
+        <h2>Your tasks</h2>
+        <label
+          >Sort by:
+          <select name="sort" id="sort">
+            <option value="closest">Closest Date</option>
+            <option value="priority">Highest Priotiy</option>
+          </select></label
+        >
+      </div>
       <div class="task-content">
         <div class="task-card low complete">
           <h3>Title</h3>
@@ -131,5 +140,38 @@
         </p>
       </footer>
     </aside>
+    <dialog>
+      <form action="" method="dialog">
+        <button type="button" class="close-modal-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <h2 class="dialog-title">New Task</h2>
+        <label for="task-title"
+          >Task Name <input type="text" id="task-title" required
+        /></label>
+        <label for="task-desc"
+          >Desciption
+          <textarea
+            name="task-desc"
+            id="task-desc"
+            placeholder="Long description for this task (optional)"
+            rows="4"
+          ></textarea>
+        </label>
+        <label for="task-due-date"
+          >Due Date
+          <input type="date" name="task-due-date" id="task-due-date" />
+        </label>
+        <label for="task-priority"
+          >Prioritiy
+          <select name="task-priority" id="task-priority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select></label
+        >
+        <button type="submit" class="submit-modal">Confirm</button>
+      </form>
+    </dialog>
   </body>
 </html>

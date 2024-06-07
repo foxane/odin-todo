@@ -9,6 +9,7 @@ class Project {
 
   constructor(name) {
     this.name = name;
+    this.id = uuidv4();
     Project.projectList.push(this); // Push to project for each new instances
   }
 
@@ -30,7 +31,7 @@ class Project {
 }
 
 class Task {
-  constructor(title, desc, dueDate, priority = "low") {
+  constructor(title, desc, dueDate, priority = 1) {
     this.title = title;
     this.desc = desc;
     this.dueDate = format(new Date(dueDate), "E',' d MMM uuuu");
