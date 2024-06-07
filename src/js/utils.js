@@ -1,25 +1,52 @@
-import { format, formatDistanceToNow } from "date-fns";
+// Modularity hell yeah
+// For easier management, some date-fns function are imported and immediately exported
+import {
+  add,
+  isThisMonth,
+  isThisWeek,
+  isToday,
+  format,
+  formatDistanceToNow,
+} from "date-fns";
+import defaultData from "./default-data";
 
 // Interface with localstorage
 const getData = () => {
-  return JSON.parse(localStorage.getItem("fxn-todo"));
+  return JSON.parse(localStorage.getItem("localData"));
 };
 
 const setData = (dataObj) => {
-  return localStorage.setItem("fxn-todo", JSON.stringify(dataObj));
+  return localStorage.setItem("localData", JSON.stringify(dataObj));
 };
 
 const clearData = () => {
-  localStorage.removeItem("fxn-todo");
+  localStorage.removeItem("localData");
+};
+
+const createDefaultData = () => {
+  localStorage.setItem("localData", JSON.stringify(defaultData));
 };
 
 // Date Formatter
-const formatDate = function (validDate) {
-  return format(validDate, "H':'mm EEE MMM yyyy");
+const formatHourAndDate = function (date) {
+  return format(date, "H':'mm EEE MMM yyyy");
+};
+const formatDate = function (date) {
+  return format(date, "EEE MMM yyy");
 };
 
-const formatDistance = function (toCompare) {
-  return formatDistanceToNow(toCompare);
+export {
+  // Localstorage
+  getData,
+  setData,
+  clearData,
+  createDefaultData,
+  // Date-fns
+  add,
+  formatDate,
+  formatHourAndDate,
+  formatDistanceToNow,
+  isToday,
+  isThisWeek,
+  isThisMonth,
 };
-
-export { getData, setData, clearData, formatDate, formatDistance };
