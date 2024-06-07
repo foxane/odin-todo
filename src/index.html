@@ -4,6 +4,132 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
-  <body></body>
+  <body>
+    <header class="">
+      <h1>To Do</h1>
+      <div class="category">
+        <div class="category-btn cursor" data-cat="today">Today</div>
+        <div class="category-btn cursor" data-cat="week">Week</div>
+        <div class="category-btn cursor" data-cat="month">Month</div>
+        <div class="category-btn cursor" data-cat="all">All</div>
+      </div>
+    </header>
+    <main class="task-container">
+      <h2 class="task-container__header">Your tasks</h2>
+      <div class="task-content">
+        <div class="task-card low complete">
+          <h3>Title</h3>
+          <p>Desciption</p>
+          <p>Dues in <strong>fri, 20 jan 2024</strong></p>
+          <div class="task-card__control">
+            <button type="button" data-edit="uuid">
+              <i class="fa-regular fa-pen-to-square"></i>
+            </button>
+            <button type="button" data-delete="uuid">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+            <button type="button" data-finish="uuid">
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </div>
+        </div>
+        <div class="task-card medium complete">
+          <h3>Title</h3>
+          <p>Desciption</p>
+          <p>Dues in <strong>fri, 20 jan 2024</strong></p>
+          <div class="task-card__control">
+            <button type="button" data-edit="uuid">
+              <i class="fa-regular fa-pen-to-square"></i>
+            </button>
+            <button type="button" data-delete="uuid">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+            <button type="button" data-finish="uuid">
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </div>
+        </div>
+        <div class="task-card high complete">
+          <h3>Title</h3>
+          <p>Desciption</p>
+          <p>Dues in <strong>fri, 20 jan 2024</strong></p>
+          <div class="task-card__control">
+            <button type="button" data-edit="uuid">
+              <i class="fa-regular fa-pen-to-square"></i>
+            </button>
+            <button type="button" data-delete="uuid">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+            <button type="button" data-finish="uuid">
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </div>
+        </div>
+        <div class="task-card low">
+          <h3>Title</h3>
+          <p>Desciption</p>
+          <p>Dues in <strong>fri, 20 jan 2024</strong></p>
+          <div class="task-card__control">
+            <button type="button" data-edit="uuid">
+              <i class="fa-regular fa-pen-to-square"></i>
+            </button>
+            <button type="button" data-delete="uuid">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+            <button type="button" data-finish="uuid">
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </div>
+        </div>
+        <div class="new-task-btn cursor">
+          <h3>New Task</h3>
+          <i class="fa-solid fa-plus"></i>
+        </div>
+      </div>
+    </main>
+    <aside>
+      <div class="project-header">
+        <h2>Projects</h2>
+      </div>
+      <div class="project-content">
+        <div class="project-btn cursor" data-proj="uuid">
+          <h4>Project 1</h4>
+        </div>
+        <div class="project-btn cursor" data-proj="uuid">
+          <h4>Project 2</h4>
+        </div>
+        <div class="project-btn cursor" data-proj="uuid">
+          <h4>Project 3</h4>
+        </div>
+      </div>
+      <div class="project-btn cursor new-project-btn">
+        <h4><i class="fa-solid fa-plus"></i> New Project</h4>
+      </div>
+      <footer class="">
+        <p>
+          <a
+            href="http://github.com/foxane"
+            target="_blank"
+            rel="noopener noreferrer"
+            >foxane</a
+          >
+          @
+          <a
+            href="http://theodinproject.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            >theOdinProject</a
+          >
+        </p>
+      </footer>
+    </aside>
+  </body>
 </html>
