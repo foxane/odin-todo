@@ -39,6 +39,7 @@ class Task {
     this.title = title;
     this.desc = desc;
     this.dueDate = format(new Date(dueDate), "E',' d MMM uuuu");
+    this._date = new Date(dueDate).toISOString().split("T")[0];
     this.priority = priority;
     this.id = uuidv4();
   }
