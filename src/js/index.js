@@ -1,11 +1,10 @@
 import { Project, Task } from "./project";
 import { defaultData } from "./default-data";
-import { updateProjectList, updateTaskList, sortByPrio } from "./dom";
+import { DOM, domInterface } from "./dom";
 import "../css/main.css";
+export { allProject };
 
-const projList = defaultData;
-updateProjectList(projList);
-updateTaskList(projList);
-console.log(projList);
-
-export { projList };
+const allProject = defaultData;
+DOM.updateProjectList(allProject);
+DOM.updateAllTask(allProject);
+console.log(allProject);
