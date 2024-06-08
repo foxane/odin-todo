@@ -27,7 +27,10 @@ class Project {
     newTask.index = this.task.indexOf(newTask);
   }
   removeTask(toRemove) {
-    this.task.splice(toRemove.index, 1);
+    const index = this.task.findIndex((task) => task.id === toRemove.id);
+    if (index !== -1) {
+      this.task.splice(index, 1);
+    }
   }
 }
 
