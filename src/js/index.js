@@ -6,5 +6,6 @@ import "../css/main.css";
 const projList = defaultData;
 updateProjectList(projList);
 updateTaskList(projList);
-sortByPrio(projList);
 console.log(projList);
+
+export { projList };

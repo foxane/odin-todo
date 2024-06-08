@@ -1,4 +1,5 @@
 import { formatDistanceToNow } from "date-fns";
+import { projList } from "./index";
 export { updateProjectList, updateTaskList, sortByPrio };
 
 const projectsView = document.querySelector(".project-content");
@@ -9,11 +10,7 @@ const PRIO_LIST = ["undefined", "low", "medium", "high"];
 const updateProjectList = (projectList) => {
   projectsView.innerHTML = "";
   for (const project of projectList) {
-    projectsView.innerHTML += `
-        <div class="project-btn cursor" data-proj="${project.id}">
-          <h4>${project.name}</h4>
-        </div>
-    `;
+    projectsView.appendChild(createProjectDiv(project));
   }
 };
 
@@ -39,27 +36,92 @@ const sortByPrio = (projectList) => {
 };
 
 const updateTask = (taskArr) => {
-  tasksView.innerHTML = "";
   for (const task of taskArr) {
-    tasksView.innerHTML += `
-      <div class="task-card ${PRIO_LIST[task.priority]}" data-task-id="${
-      task.id
-    }">
-        <h3>${task.title}</h3>
-        <p>${task.desc}</p>
-        <p>Dues in <strong>${formatDistanceToNow(task.dueDate)}</strong></p>
-        <div class="task-card__control">
-          <button type="button" data-edit="${task.id}">
-            <i class="fa-regular fa-pen-to-square"></i>
-          </button>
-          <button type="button" data-delete="${task.id}">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-          <button type="button" data-finish="${task.id}">
-            <i class="fa-solid fa-check"></i>
-          </button>
-        </div>
-      </div>
-    `;
+    tasksView.appendChild(createTaskDiv(task));
   }
+};
+
+const createProjectDiv = (project) => {
+  const projectDiv = document.createElement("div");
+  projectDiv.classList.add("project-btn", "cursor");
+  projectDiv.dataset.project = project.id;
+
+  const p = document.createElement("p");
+  p.appendChild(document.createTextNode(project.name));
+
+  // Remove project
+  const icon = document.createElement("i");
+  icon.classList.add("fa-solid", "fa-xmark");
+  icon.dataset.deleteProject = project.id;
+  icon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    project.deleteSelf();
+    projectsView.removeChild(projectDiv);
+    updateTaskList(projList);
+    console.log(projList);
+  });
+  p.appendChild(icon);
+
+  projectDiv.appendChild(p);
+
+  return projectDiv;
+};
+
+// Cteate Task cards
+const createTaskDiv = (task) => {
+  // Task container
+  const taskDiv = document.createElement("div");
+  taskDiv.classList.add("task-card", PRIO_LIST[task.priority]);
+  taskDiv.dataset.taskId = task.id;
+
+  // task title
+  const h3 = document.createElement("h3");
+  h3.textContent = task.title;
+  taskDiv.appendChild(h3);
+
+  // task desc
+  const p = document.createElement("p");
+  p.textContent = task.desc;
+  taskDiv.appendChild(p);
+
+  // task due
+  const p2 = document.createElement("p2");
+  p2.textContent = "Dues in";
+  const strong = document.createElement("strong");
+  strong.textContent = formatDistanceToNow(task.dueDate);
+  p2.appendChild(strong);
+  taskDiv.appendChild(p2);
+
+  // Task control buttons
+  const buttonValues = [
+    {
+      dataSet: "data-edit",
+      iconClass: ["fa-regular", "fa-pen-to-square"],
+    },
+    {
+      dataSet: "data-delete",
+      iconClass: ["fa-solid", "fa-trash"],
+    },
+    {
+      dataSet: "data-finish",
+      iconClass: ["fa-solid", "fa-check"],
+    },
+  ];
+
+  const buttons = document.createElement("button");
+  buttons.classList.add("task-card__control");
+  for (const buttonVal of buttonValues) {
+    const button = document.createElement("button");
+    button.setAttribute("type", "button");
+    button.setAttribute(buttonVal.dataSet, task.id);
+
+    const icon = document.createElement("i");
+    icon.classList.add(buttonVal.iconClass[0], buttonVal.iconClass[1]);
+    button.appendChild(icon);
+
+    buttons.appendChild(button);
+  }
+  taskDiv.appendChild(buttons);
+
+  return taskDiv;
 };

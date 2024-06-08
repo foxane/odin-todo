@@ -17,6 +17,7 @@ class Project {
   deleteSelf() {
     const index = Project.projectList.indexOf(this);
     Project.projectList.splice(index, 1);
+    console.log("Deleteing project: ", this.name);
   }
 
   // Add and remove task from task arr
