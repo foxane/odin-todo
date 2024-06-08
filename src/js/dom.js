@@ -1,10 +1,29 @@
 import { formatDistanceToNow } from "date-fns";
 import { allProject } from "./index";
-export { DOM };
+import { Project, Task } from "./project";
+export { DOM, domInterface };
 
 const projectsView = document.querySelector(".project-content");
 const tasksView = document.querySelector(".task-content");
+const newProjectBtn = document.querySelector(".new-project-btn");
+const newTaskBtn = document.querySelector(".new-task-btn");
+const dialog = document.querySelector("dialog");
 const PRIO_LIST = ["undefined", "low", "medium", "high"];
+
+newTaskBtn.addEventListener("click", () => {
+  if (allProject.length === 0) {
+    alert("You need to have atleast 1 project!");
+    return;
+  }
+  dialog.innerHTML = "";
+  dialog.appendChild(DOM.modal.createTask());
+  dialog.showModal();
+});
+newProjectBtn.addEventListener("click", () => {
+  dialog.innerHTML = "";
+  dialog.appendChild(DOM.modal.createProjectForm());
+  dialog.showModal();
+});
 
 const DOM = (() => {
   // Project
@@ -38,7 +57,7 @@ const DOM = (() => {
 
     // View project tasks
     projectDiv.addEventListener("click", () => {
-      updateAllTask(project);
+      updateTaskByProject(project);
     });
 
     projectDiv.appendChild(p);
@@ -157,7 +176,254 @@ const DOM = (() => {
       console.log(project.task);
     }
   };
-  const editTask = (task) => {};
+  const editTask = (task) => {
+    dialog.innerHTML = "";
+    dialog.classList.remove(".create-project");
+    dialog.appendChild(DOM.modal.editTask(task));
+    dialog.showModal();
+  };
 
-  return { updateProjectList, updateAllTask };
+  const modal = {
+    createProjectForm() {
+      // Create form element
+      const form = document.createElement("form");
+      form.setAttribute("action", "");
+      form.setAttribute("method", "dialog");
+      form.classList.add("create-project");
+
+      // Create close button
+      const closeButton = document.createElement("button");
+      closeButton.setAttribute("type", "button");
+      closeButton.className = "close-modal-btn";
+      closeButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      closeButton.addEventListener("click", () => dialog.close());
+      form.appendChild(closeButton);
+
+      // Create title
+      const title = document.createElement("h2");
+      title.className = "dialog-title";
+      title.textContent = "New Project";
+      form.appendChild(title);
+
+      // Create project name input
+      const projectNameInput = document.createElement("input");
+      projectNameInput.setAttribute("type", "text");
+      projectNameInput.setAttribute("id", "task-title");
+      projectNameInput.setAttribute("placeholder", "Project names");
+      projectNameInput.setAttribute("required", "true");
+      form.appendChild(projectNameInput);
+
+      // Create submit button
+      const submitButton = document.createElement("button");
+      submitButton.setAttribute("type", "submit");
+      submitButton.className = "submit-modal";
+      submitButton.textContent = "Confirm";
+      submitButton.addEventListener("click", (e) => {
+        if (!projectNameInput.value) {
+          alert("Huh? i thought you want to create a project..");
+          e.preventDefault();
+          return;
+        }
+        domInterface.createProject(projectNameInput.value);
+      });
+      form.appendChild(submitButton);
+
+      return form;
+    },
+    editTask(task) {
+      // TODO: add initial value on form inputs when editing you can use (input.value = initial || '')
+      return this.createTaskForm("Edit Task", "edit", task);
+    },
+    createTask() {
+      return this.createTaskForm("Create Task", "create");
+    },
+    createTaskForm(dialogTitle, type, task) {
+      // TODO: add initial value on form inputs when editing you can use (input.value = initial || '')
+      // Create form element
+      const form = document.createElement("form");
+      form.setAttribute("action", "");
+      form.setAttribute("method", "dialog");
+
+      // Create close button
+      const closeButton = document.createElement("button");
+      closeButton.setAttribute("type", "button");
+      closeButton.className = "close-modal-btn";
+      closeButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      closeButton.addEventListener("click", () => dialog.close());
+      form.appendChild(closeButton);
+
+      // Create title
+      const title = document.createElement("h2");
+      title.className = "dialog-title";
+      title.textContent = dialogTitle;
+      form.appendChild(title);
+
+      // Create task name input
+      const taskNameLabel = document.createElement("label");
+      taskNameLabel.setAttribute("for", "task-title");
+      taskNameLabel.textContent = "*Task Name ";
+      const taskNameInput = document.createElement("input");
+      taskNameInput.setAttribute("type", "text");
+      taskNameInput.setAttribute("id", "task-title");
+      taskNameInput.setAttribute("required", "true");
+      // If this an edit, set the value
+      taskNameInput.value = task ? task.title : "";
+      taskNameLabel.appendChild(taskNameInput);
+      form.appendChild(taskNameLabel);
+
+      // Create task description textarea
+      const taskDescLabel = document.createElement("label");
+      taskDescLabel.setAttribute("for", "task-desc");
+      taskDescLabel.textContent = "Description ";
+      const taskDescTextarea = document.createElement("textarea");
+      taskDescTextarea.setAttribute("name", "task-desc");
+      taskDescTextarea.setAttribute("id", "task-desc");
+      taskDescTextarea.setAttribute(
+        "placeholder",
+        "Long description for this task (optional)"
+      );
+      taskDescTextarea.setAttribute("rows", "4");
+      // If this an edit, set the value
+      taskDescTextarea.value = task ? task.desc : "";
+      taskDescLabel.appendChild(taskDescTextarea);
+      form.appendChild(taskDescLabel);
+
+      // Create due date input
+      const dueDateLabel = document.createElement("label");
+      dueDateLabel.setAttribute("for", "task-due-date");
+      dueDateLabel.textContent = "*Due Date ";
+      const dueDateInput = document.createElement("input");
+      dueDateInput.setAttribute("type", "date");
+      dueDateInput.setAttribute("required", "true");
+      dueDateInput.setAttribute("name", "task-due-date");
+      dueDateInput.setAttribute("id", "task-due-date");
+      // If this an edit, set the value
+      dueDateInput.value = task ? task._date : "";
+      dueDateLabel.appendChild(dueDateInput);
+      form.appendChild(dueDateLabel);
+
+      // Create priority select
+      const priorityLabel = document.createElement("label");
+      priorityLabel.setAttribute("for", "task-priority");
+      priorityLabel.textContent = "Priority ";
+      const prioritySelect = document.createElement("select");
+      prioritySelect.setAttribute("name", "task-priority");
+      prioritySelect.setAttribute("id", "task-priority");
+      const priorities = ["Low", "Medium", "High"];
+      priorities.forEach((priority) => {
+        const option = document.createElement("option");
+        option.setAttribute("value", priorities.indexOf(priority) + 1);
+        option.textContent = priority;
+        // If this and edit, set the value
+        if (task && task.priority === priorities.indexOf(priority) + 1) {
+          option.selected = true;
+        }
+        prioritySelect.appendChild(option);
+      });
+      priorityLabel.appendChild(prioritySelect);
+      form.appendChild(priorityLabel);
+
+      // Create parent project select
+      const parentLabel = document.createElement("label");
+      parentLabel.setAttribute("for", "project-parent");
+      parentLabel.textContent = "Project ";
+      const parentSelect = document.createElement("select");
+      parentSelect.setAttribute("name", "project-parent");
+      parentSelect.setAttribute("id", "project-parent");
+      const parents = allProject;
+      for (const [index, parent] of parents.entries()) {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = parent.name;
+        // If this and edit, set the value
+        if (task) {
+          // Find parent object from task
+          const parentProjectIndex = allProject.findIndex((project) =>
+            project.task.some((taskItem) => taskItem.id === task.id)
+          );
+          if (parentProjectIndex === index) {
+            option.selected = true;
+          }
+        }
+        parentSelect.appendChild(option);
+      }
+      parentLabel.appendChild(parentSelect);
+      form.appendChild(parentLabel);
+
+      // Create submit button
+      const submitButton = document.createElement("button");
+      submitButton.setAttribute("type", "submit");
+      submitButton.className = "submit-modal";
+      submitButton.textContent = "Confirm";
+      submitButton.addEventListener("click", (e) => {
+        // Check if all required field are filled
+        const required = form.querySelectorAll("[required]");
+        for (const input of required) {
+          if (!input.value) {
+            alert("Please fill out all required fields");
+            e.preventDefault();
+            return;
+          }
+        }
+        if (type === "create") {
+          domInterface.createTask(
+            taskNameInput.value,
+            taskDescTextarea.value,
+            new Date(dueDateInput.value),
+            prioritySelect.value,
+            allProject[parentSelect.value]
+          );
+        } else if (type === "edit") {
+          domInterface.editTask(
+            taskNameInput.value,
+            taskDescTextarea.value,
+            new Date(dueDateInput.value),
+            prioritySelect.value,
+            allProject[parentSelect.value],
+            task
+          );
+        }
+      });
+      form.appendChild(submitButton);
+
+      return form;
+    },
+  };
+
+  return { updateProjectList, updateTaskByProject, updateAllTask, modal };
+})();
+
+const domInterface = (() => {
+  // Create Project
+  const createProject = (projectName) => {
+    new Project(projectName);
+    DOM.updateProjectList(allProject);
+    console.log(allProject);
+  };
+
+  // Create Task
+  const createTask = (
+    title,
+    desc = "Why didn't you give us description? Am i that worthless like our creator?",
+    dueDate,
+    priority,
+    parentProject
+  ) => {
+    const newTask = new Task(title, desc, dueDate, priority);
+    parentProject.addTask(newTask);
+    DOM.updateTaskByProject(parentProject);
+  };
+
+  // Edit Task
+  const editTask = (title, desc, dueDate, priority, parentProject, task) => {
+    const index = parentProject.task.indexOf(task);
+    parentProject.task[index].title = title;
+    parentProject.task[index].desc = desc;
+    parentProject.task[index].dueDate = dueDate;
+    parentProject.task[index].priority = priority;
+    DOM.updateTaskByProject(parentProject);
+  };
+
+  //
+  return { createProject, createTask, editTask };
 })();
