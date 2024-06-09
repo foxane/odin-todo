@@ -3,6 +3,7 @@ import { allProject } from "./index";
 import { Project, Task } from "./project";
 export { DOM, domInterface };
 
+// Dom Template elements
 const projectsView = document.querySelector(".project-content");
 const tasksView = document.querySelector(".task-content");
 const newProjectBtn = document.querySelector(".new-project-btn");
@@ -10,9 +11,19 @@ const newTaskBtn = document.querySelector(".new-task-btn");
 const dialog = document.querySelector("dialog");
 const PRIO_LIST = ["undefined", "low", "medium", "high"];
 
+// TODO: Add completed task functionality and logic
+// TODO: Move completed task to bottom of the list
+// TODO: Add sort functionality
+// TODO: Add localStorage interface
+// TODO: Add active project button style
+// TODO: Delete today, week, month button. move all button to projects
+
 newTaskBtn.addEventListener("click", () => {
   if (allProject.length === 0) {
-    alert("You need to have atleast 1 project!");
+    alert("You need to have at least 1 project!");
+    dialog.innerHTML = "";
+    dialog.appendChild(DOM.modal.createProjectForm());
+    dialog.showModal();
     return;
   }
   dialog.innerHTML = "";
