@@ -37,71 +37,9 @@
           <i class="fa-solid fa-plus"></i>
         </div>
       </div>
+
       <div class="task-content">
-        <div class="task-card low complete">
-          <h3>Title</h3>
-          <p>Desciption</p>
-          <p>Dues in <strong>fri, 20 jan 2024</strong></p>
-          <div class="task-card__control">
-            <button type="button" data-edit="uuid">
-              <i class="fa-regular fa-pen-to-square"></i>
-            </button>
-            <button type="button" data-delete="uuid">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-            <button type="button" data-finish="uuid">
-              <i class="fa-solid fa-check"></i>
-            </button>
-          </div>
-        </div>
-        <div class="task-card medium complete">
-          <h3>Title</h3>
-          <p>Desciption</p>
-          <p>Dues in <strong>fri, 20 jan 2024</strong></p>
-          <div class="task-card__control">
-            <button type="button" data-edit="uuid">
-              <i class="fa-regular fa-pen-to-square"></i>
-            </button>
-            <button type="button" data-delete="uuid">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-            <button type="button" data-finish="uuid">
-              <i class="fa-solid fa-check"></i>
-            </button>
-          </div>
-        </div>
-        <div class="task-card high complete">
-          <h3>Title</h3>
-          <p>Desciption</p>
-          <p>Dues in <strong>fri, 20 jan 2024</strong></p>
-          <div class="task-card__control">
-            <button type="button" data-edit="uuid">
-              <i class="fa-regular fa-pen-to-square"></i>
-            </button>
-            <button type="button" data-delete="uuid">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-            <button type="button" data-finish="uuid">
-              <i class="fa-solid fa-check"></i>
-            </button>
-          </div>
-        </div>
-        <div class="task-card low">
-          <h3>Title</h3>
-          <p>Desciption</p>
-          <p>Dues in <strong>fri, 20 jan 2024</strong></p>
-          <div class="task-card__control">
-            <button type="button" data-edit="uuid">
-              <i class="fa-regular fa-pen-to-square"></i>
-            </button>
-            <button type="button" data-delete="uuid">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-            <button type="button" data-finish="uuid">
-              <i class="fa-solid fa-check"></i>
-            </button>
-          </div>
-        </div>
+        <!-- Filled with dynamically added task card -->
       </div>
     </main>
     <aside>
@@ -109,15 +47,7 @@
         <h2>Projects</h2>
       </div>
       <div class="project-content">
-        <div class="project-btn cursor" data-proj="uuid">
-          <h4>Project 1</h4>
-        </div>
-        <div class="project-btn cursor" data-proj="uuid">
-          <h4>Project 2</h4>
-        </div>
-        <div class="project-btn cursor" data-proj="uuid">
-          <h4>Project 3</h4>
-        </div>
+        <!-- Filled with dynamically added project card -->
       </div>
       <div class="project-btn cursor new-project-btn">
         <h4><i class="fa-solid fa-plus"></i> New Project</h4>
@@ -141,37 +71,7 @@
       </footer>
     </aside>
     <dialog>
-      <form action="" method="dialog">
-        <button type="button" class="close-modal-btn">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-        <h2 class="dialog-title">New Task</h2>
-        <label for="task-title"
-          >Task Name <input type="text" id="task-title" required
-        /></label>
-        <label for="task-desc"
-          >Desciption
-          <textarea
-            name="task-desc"
-            id="task-desc"
-            placeholder="Long description for this task (optional)"
-            rows="4"
-          ></textarea>
-        </label>
-        <label for="task-due-date"
-          >Due Date
-          <input type="date" name="task-due-date" id="task-due-date" />
-        </label>
-        <label for="task-priority"
-          >Prioritiy
-          <select name="task-priority" id="task-priority">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select></label
-        >
-        <button type="submit" class="submit-modal">Confirm</button>
-      </form>
+      <!-- Filled with dynamically created form -->
     </dialog>
   </body>
 </html>
