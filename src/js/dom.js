@@ -183,13 +183,18 @@ const DOM = (() => {
     const taskCards = tasksView.querySelectorAll(".task-card");
     for (const taskCard of taskCards) {
       if (taskCard.dataset.taskId === task.id) {
+        // Check is task is already completed
+        if (
+          taskCard.classList.contains("complete") ||
+          taskCard.classList.contains("completed-before")
+        )
+          return;
         if (task) {
           // Find parent object from task
           const parentProjectIndex = allProject.findIndex((project) =>
             project.task.some((taskItem) => taskItem.id === task.id)
           );
           allProject[parentProjectIndex].completeTask(task);
-          console.log(allProject[parentProjectIndex]);
         }
         taskCard.classList.add("complete");
       }
@@ -265,14 +270,12 @@ const DOM = (() => {
       return form;
     },
     editTask(task) {
-      // TODO: add initial value on form inputs when editing you can use (input.value = initial || '')
       return this.createTaskForm("Edit Task", "edit", task);
     },
     createTask() {
       return this.createTaskForm("Create Task", "create");
     },
     createTaskForm(dialogTitle, type, task) {
-      // TODO: add initial value on form inputs when editing you can use (input.value = initial || '')
       // Create form element
       const form = document.createElement("form");
       form.setAttribute("action", "");
@@ -451,11 +454,23 @@ const domInterface = (() => {
   // Edit Task
   const editTask = (title, desc, dueDate, priority, parentProject, task) => {
     const index = parentProject.task.indexOf(task);
-    parentProject.task[index].title = title;
-    parentProject.task[index].desc = desc;
-    parentProject.task[index].dueDate = dueDate;
-    parentProject.task[index].priority = priority;
-    DOM.updateTaskByProject(parentProject);
+    const completedIndex = parentProject.completedTasks.indexOf(task);
+    console.log(index, completedIndex);
+    // Edit not completed task
+    if (index !== -1) {
+      parentProject.task[index].title = title;
+      parentProject.task[index].desc = desc;
+      parentProject.task[index].dueDate = dueDate;
+      parentProject.task[index].priority = priority;
+      DOM.updateTaskByProject(parentProject);
+    } else {
+      // Edit completed task
+      parentProject.task[completedIndex].title = title;
+      parentProject.task[completedIndex].desc = desc;
+      parentProject.task[completedIndex].dueDate = dueDate;
+      parentProject.task[completedIndex].priority = priority;
+      DOM.updateTaskByProject(parentProject);
+    }
   };
 
   //
