@@ -3,20 +3,50 @@ import { allProject } from "./index";
 import { Project, Task } from "./project";
 export { DOM, domInterface };
 
+const PRIO_LIST = ["undefined", "low", "medium", "high"];
+
 // Dom Template elements
 const projectsView = document.querySelector(".project-content");
 const tasksView = document.querySelector(".task-content");
 const newProjectBtn = document.querySelector(".new-project-btn");
 const newTaskBtn = document.querySelector(".new-task-btn");
 const dialog = document.querySelector("dialog");
-const PRIO_LIST = ["undefined", "low", "medium", "high"];
+const sortSelect = document.getElementById("sort");
 
 // TODO: Move completed task to bottom of the list (done, but need to update tasklist for this to take effect) find a better way
-// TODO: Add sort functionality
+// TODO: Apply sort functionality (call sortController from project button click)
 // TODO: Add localStorage interface
 // TODO: Add active project button style
 // TODO: Delete today, week, month button. move all button to projects
 
+// Currently selected project
+let g_activeProject = "all";
+const sortController = (project) => {
+  if (project === "all") {
+    // Merging all task into one array
+    const taskArr = [];
+    for (const project of allProject) {
+      for (const task of project.task) {
+        taskArr.push(task);
+      }
+    }
+    // Merge completed task
+    const completedTaskArr = [];
+    for (const project of allProject) {
+      for (const task of project.completedTasks) {
+        completedTaskArr.push(task);
+      }
+    }
+    DOM.sortTask(taskArr, completedTaskArr);
+  } else {
+    DOM.sortTask(project);
+  }
+};
+
+sortSelect.addEventListener("change", () => {
+  console.log(sortSelect.value);
+  sortController(g_activeProject);
+});
 newTaskBtn.addEventListener("click", () => {
   if (allProject.length === 0) {
     alert("You need to have at least 1 project!");
@@ -38,7 +68,21 @@ newProjectBtn.addEventListener("click", () => {
 const DOM = (() => {
   // Project
   const updateProjectList = (allProject) => {
-    projectsView.innerHTML = "";
+    projectsView.innerHTML = ``;
+
+    // Create 'All Project' button
+    const allProjectBtn = document.createElement("div");
+    allProjectBtn.classList.add("project-btn", "all-project-btn", "cursor");
+    allProjectBtn.dataset.project = "all";
+    const allP = document.createElement("p");
+    allP.textContent = "All Projects";
+    allProjectBtn.appendChild(allP);
+    projectsView.appendChild(allProjectBtn);
+    allProjectBtn.addEventListener("click", () => {
+      updateAllTask(allProject);
+    });
+
+    // Iterate project list
     for (const project of allProject) {
       projectsView.appendChild(createProjectDiv(project));
     }
@@ -76,6 +120,7 @@ const DOM = (() => {
   };
 
   // Tasks
+  // Require allProject array
   const updateAllTask = (allProject) => {
     tasksView.innerHTML = "";
     for (const project of allProject) {
@@ -90,6 +135,8 @@ const DOM = (() => {
       }
     }
   };
+
+  // Require project object
   const updateTaskByProject = (project) => {
     tasksView.innerHTML = "";
     for (const task of project.task) {
@@ -101,7 +148,52 @@ const DOM = (() => {
     }
   };
 
-  //Sort task list
+  //Sort task list, require allTask array(all project.task combined into one) NOT allProject!
+  const sortTask = (taskArr, completedTaskArr) => {
+    const sortVal = sortSelect.value;
+    if (sortVal === "priority") {
+      updateTaskByPrio(taskArr, completedTaskArr);
+    } else if (sortVal === "closest") {
+      updateTaskByClosestDate(taskArr, completedTaskArr);
+    }
+  };
+  const updateTaskByPrio = (taskArr, completedTaskArr) => {
+    // Sort uncompleted task
+    taskArr.sort(function (a, b) {
+      return b.priority - a.priority;
+    });
+    // Sort completed task
+    completedTaskArr.sort(function (a, b) {
+      return b.priority - a.priority;
+    });
+
+    // Update task list
+    tasksView.innerHTML = "";
+    for (const task of taskArr) {
+      tasksView.appendChild(createTaskDiv(task));
+    }
+    for (const task of completedTaskArr) {
+      tasksView.appendChild(createTaskDiv(task));
+    }
+  };
+  const updateTaskByClosestDate = (taskArr, completedTaskArr) => {
+    // Sort
+    taskArr.sort(function (a, b) {
+      return new Date(a._date) - new Date(b._date);
+    });
+    completedTaskArr.sort(function (a, b) {
+      return new Date(a._date) - new Date(b._date);
+    });
+
+    // update task list
+    tasksView.innerHTML = "";
+    for (const task of taskArr) {
+      tasksView.appendChild(createTaskDiv(task));
+    }
+    for (const task of completedTaskArr) {
+      tasksView.appendChild(createTaskDiv(task));
+    }
+  };
 
   // Create task card
   const createTaskDiv = (task) => {
@@ -397,9 +489,12 @@ const DOM = (() => {
         const required = form.querySelectorAll("[required]");
         for (const input of required) {
           if (!input.value) {
-            alert("Please fill out all required fields");
+            input.classList.add("required-effect");
+            alert("Please fill out all required fields!");
             e.preventDefault();
             return;
+          } else {
+            input.classList.remove("required-effect");
           }
         }
         if (type === "create") {
@@ -427,7 +522,13 @@ const DOM = (() => {
     },
   };
 
-  return { updateProjectList, updateTaskByProject, updateAllTask, modal };
+  return {
+    updateProjectList,
+    updateTaskByProject,
+    updateAllTask,
+    modal,
+    sortTask,
+  };
 })();
 
 const domInterface = (() => {
