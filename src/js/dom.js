@@ -1,7 +1,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { allProject } from "./index";
 import { Project, Task } from "./project";
-export { DOM, domInterface };
+export { DOM, domInterface, sortController };
 
 const PRIO_LIST = ["undefined", "low", "medium", "high"];
 
@@ -14,10 +14,9 @@ const dialog = document.querySelector("dialog");
 const sortSelect = document.getElementById("sort");
 
 // TODO: Move completed task to bottom of the list (done, but need to update tasklist for this to take effect) find a better way
-// TODO: Apply sort functionality (call sortController from project button click)
 // TODO: Add localStorage interface
 // TODO: Add active project button style
-// TODO: Delete today, week, month button. move all button to projects
+// TODO: Delete today, week, month button
 
 // Currently selected project
 let g_activeProject = "all";
@@ -39,12 +38,11 @@ const sortController = (project) => {
     }
     DOM.sortTask(taskArr, completedTaskArr);
   } else {
-    DOM.sortTask(project);
+    DOM.sortTask(project.task, project.completedTasks);
   }
 };
 
 sortSelect.addEventListener("change", () => {
-  console.log(sortSelect.value);
   sortController(g_activeProject);
 });
 newTaskBtn.addEventListener("click", () => {
@@ -79,7 +77,13 @@ const DOM = (() => {
     allProjectBtn.appendChild(allP);
     projectsView.appendChild(allProjectBtn);
     allProjectBtn.addEventListener("click", () => {
-      updateAllTask(allProject);
+      const projectBtnArr = document.querySelectorAll(".project-btn");
+      projectBtnArr.forEach((btn) => {
+        btn.classList.remove("active");
+      });
+      allProjectBtn.classList.add("active");
+      g_activeProject = "all";
+      sortController("all");
     });
 
     // Iterate project list
@@ -105,13 +109,19 @@ const DOM = (() => {
       e.stopPropagation();
       project.deleteSelf();
       projectsView.removeChild(projectDiv);
-      updateAllTask(allProject);
+      sortController("all");
     });
     p.appendChild(icon);
 
-    // View project tasks
+    // View project tasks and apply current project
     projectDiv.addEventListener("click", () => {
-      updateTaskByProject(project);
+      const projectBtnArr = document.querySelectorAll(".project-btn");
+      projectBtnArr.forEach((btn) => {
+        btn.classList.remove("active");
+      });
+      projectDiv.classList.add("active");
+      g_activeProject = project;
+      sortController(project);
     });
 
     projectDiv.appendChild(p);
@@ -120,34 +130,6 @@ const DOM = (() => {
   };
 
   // Tasks
-  // Require allProject array
-  const updateAllTask = (allProject) => {
-    tasksView.innerHTML = "";
-    for (const project of allProject) {
-      for (const task of project.task) {
-        tasksView.appendChild(createTaskDiv(task));
-      }
-    }
-    // Append completed task at the end of list
-    for (const project of allProject) {
-      for (const completedTask of project.completedTasks) {
-        tasksView.appendChild(createTaskDiv(completedTask));
-      }
-    }
-  };
-
-  // Require project object
-  const updateTaskByProject = (project) => {
-    tasksView.innerHTML = "";
-    for (const task of project.task) {
-      tasksView.appendChild(createTaskDiv(task));
-    }
-    // Append completed task at the end of list
-    for (const completedTask of project.completedTasks) {
-      tasksView.appendChild(createTaskDiv(completedTask));
-    }
-  };
-
   //Sort task list, require allTask array(all project.task combined into one) NOT allProject!
   const sortTask = (taskArr, completedTaskArr) => {
     const sortVal = sortSelect.value;
@@ -456,22 +438,38 @@ const DOM = (() => {
       const parentLabel = document.createElement("label");
       parentLabel.setAttribute("for", "project-parent");
       parentLabel.textContent = "Project ";
+
       const parentSelect = document.createElement("select");
       parentSelect.setAttribute("name", "project-parent");
       parentSelect.setAttribute("id", "project-parent");
+
+      // Create Select element and assigb default value
+      // TODO: FIX THIS DISGUSTING MESS
       const parents = allProject;
       for (const [index, parent] of parents.entries()) {
         const option = document.createElement("option");
         option.value = index;
         option.textContent = parent.name;
-        // If this and edit, set the value
+        // Edit
         if (task) {
           // Find parent object from task
           const parentProjectIndex = allProject.findIndex((project) =>
             project.task.some((taskItem) => taskItem.id === task.id)
           );
           if (parentProjectIndex === index) {
+            // Select the correct index
             option.selected = true;
+          }
+          // Create
+        } else {
+          if (g_activeProject === "all") {
+            // Selected project is all
+            parentSelect.appendChild(option);
+          } else {
+            if (allProject.indexOf(g_activeProject) === index) {
+              // Selected project
+              option.selected = true;
+            }
           }
         }
         parentSelect.appendChild(option);
@@ -524,8 +522,6 @@ const DOM = (() => {
 
   return {
     updateProjectList,
-    updateTaskByProject,
-    updateAllTask,
     modal,
     sortTask,
   };
@@ -549,7 +545,7 @@ const domInterface = (() => {
   ) => {
     const newTask = new Task(title, desc, dueDate, priority);
     parentProject.addTask(newTask);
-    DOM.updateTaskByProject(parentProject);
+    sortController(parentProject);
   };
 
   // Edit Task
@@ -563,14 +559,14 @@ const domInterface = (() => {
       parentProject.task[index].desc = desc;
       parentProject.task[index].dueDate = dueDate;
       parentProject.task[index].priority = priority;
-      DOM.updateTaskByProject(parentProject);
+      sortController(parentProject);
     } else {
       // Edit completed task
       parentProject.task[completedIndex].title = title;
       parentProject.task[completedIndex].desc = desc;
       parentProject.task[completedIndex].dueDate = dueDate;
       parentProject.task[completedIndex].priority = priority;
-      DOM.updateTaskByProject(parentProject);
+      sortController(parentProject);
     }
   };
 
