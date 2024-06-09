@@ -278,7 +278,17 @@ const DOM = (() => {
   const deleteTask = (task) => {
     console.log(task);
     for (const project of allProject) {
+      // Delete not completed task
       project.task.forEach((el) => {
+        if (task.id == el.id) {
+          project.removeTask(task);
+          tasksView.removeChild(
+            document.querySelector(`[data-task-id="${task.id}"]`)
+          );
+        }
+      });
+      // Delete completed task
+      project.completedTasks.forEach((el) => {
         if (task.id == el.id) {
           project.removeTask(task);
           tasksView.removeChild(
