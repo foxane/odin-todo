@@ -17,10 +17,6 @@
   --clr-complete-medium: rgb(253, 253, 195);
   --clr-complete-high: #ffbaba;
 }
-/* UTILS */
-.cursor {
-  cursor: pointer;
-}
 
 /* GLOBAL */
 * {
@@ -251,6 +247,10 @@ footer a:hover {
   opacity: 0.5;
   transition: opacity 1s;
 }
+.completed-before {
+  animation: complete-animation 0s forwards;
+  transition: none;
+}
 .low.complete {
   background-image: linear-gradient(
     90deg,
@@ -365,4 +365,12 @@ dialog::backdrop {
 }
 .create-project input {
   margin: 0 auto;
+}
+
+/* UTILS */
+.cursor {
+  cursor: pointer;
+}
+.cursor-disabled {
+  cursor: not-allowed;
 }

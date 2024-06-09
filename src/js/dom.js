@@ -11,8 +11,7 @@ const newTaskBtn = document.querySelector(".new-task-btn");
 const dialog = document.querySelector("dialog");
 const PRIO_LIST = ["undefined", "low", "medium", "high"];
 
-// TODO: Add completed task functionality and logic
-// TODO: Move completed task to bottom of the list
+// TODO: Move completed task to bottom of the list (done, but need to update tasklist for this to take effect) find a better way
 // TODO: Add sort functionality
 // TODO: Add localStorage interface
 // TODO: Add active project button style
@@ -84,13 +83,25 @@ const DOM = (() => {
         tasksView.appendChild(createTaskDiv(task));
       }
     }
+    // Append completed task at the end of list
+    for (const project of allProject) {
+      for (const completedTask of project.completedTasks) {
+        tasksView.appendChild(createTaskDiv(completedTask));
+      }
+    }
   };
   const updateTaskByProject = (project) => {
     tasksView.innerHTML = "";
     for (const task of project.task) {
       tasksView.appendChild(createTaskDiv(task));
     }
+    // Append completed task at the end of list
+    for (const completedTask of project.completedTasks) {
+      tasksView.appendChild(createTaskDiv(completedTask));
+    }
   };
+
+  //Sort task list
 
   // Create task card
   const createTaskDiv = (task) => {
@@ -113,8 +124,8 @@ const DOM = (() => {
       {
         dataSet: "data-finish",
         iconClass: ["fa-solid", "fa-check"],
-        func(task) {
-          finishTask(task);
+        func(task, taskCardElement) {
+          finishTask(task, taskCardElement);
         },
       },
     ];
@@ -123,7 +134,11 @@ const DOM = (() => {
     const taskDiv = document.createElement("div");
     taskDiv.classList.add("task-card", PRIO_LIST[task.priority]);
     taskDiv.dataset.taskId = task.id;
-
+    // Check if task is completed before this
+    if (task._completed) {
+      taskDiv.classList.add("complete");
+      taskDiv.classList.add("completed-before");
+    }
     // task title
     const h3 = document.createElement("h3");
     h3.textContent = task.title;
@@ -168,6 +183,14 @@ const DOM = (() => {
     const taskCards = tasksView.querySelectorAll(".task-card");
     for (const taskCard of taskCards) {
       if (taskCard.dataset.taskId === task.id) {
+        if (task) {
+          // Find parent object from task
+          const parentProjectIndex = allProject.findIndex((project) =>
+            project.task.some((taskItem) => taskItem.id === task.id)
+          );
+          allProject[parentProjectIndex].completeTask(task);
+          console.log(allProject[parentProjectIndex]);
+        }
         taskCard.classList.add("complete");
       }
     }

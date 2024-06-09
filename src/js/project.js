@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 class Project {
   static projectList = [];
   task = [];
+  completedTasks = [];
 
   constructor(name) {
     this.name = name;
@@ -32,14 +33,20 @@ class Project {
       this.task.splice(index, 1);
     }
   }
+  completeTask(taskToComplete) {
+    taskToComplete._completed = true;
+    this.removeTask(taskToComplete);
+    this.completedTasks.push(taskToComplete);
+  }
 }
 
+// TODO: Add completed task functionality and logic
 class Task {
   constructor(title, desc, dueDate, priority = 1) {
     this.title = title;
     this.desc = desc;
     this.dueDate = format(new Date(dueDate), "E',' d MMM uuuu");
-    this._date = new Date(dueDate).toISOString().split("T")[0];
+    this._date = new Date(dueDate).toISOString().split("T")[0]; // Convert date object to 'yyyy-mm-dd'
     this.priority = priority;
     this.id = uuidv4();
   }
