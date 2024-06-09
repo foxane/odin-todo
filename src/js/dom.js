@@ -1,9 +1,20 @@
-import { formatDistanceToNow } from "date-fns";
+import {
+  formatDistanceToNow,
+  isToday,
+  isThisWeek,
+  isThisMonth,
+} from "date-fns";
 import { allProject } from "./index";
 import { Project, Task } from "./project";
 export { DOM, domInterface, sortController };
 
 const PRIO_LIST = ["undefined", "low", "medium", "high"];
+
+const dateFnsScope = {
+  isToday,
+  isThisWeek,
+  isThisMonth,
+};
 
 // Dom Template elements
 const projectsView = document.querySelector(".project-content");
@@ -12,18 +23,19 @@ const newProjectBtn = document.querySelector(".new-project-btn");
 const newTaskBtn = document.querySelector(".new-task-btn");
 const dialog = document.querySelector("dialog");
 const sortSelect = document.getElementById("sort");
+const categoryBtns = document.querySelectorAll(".category-btn");
 
 // TODO: Move completed task to bottom of the list (done, but need to update tasklist for this to take effect) find a better way
 // TODO: Add localStorage interface
-// TODO: Add active project button style
 // TODO: Delete today, week, month button
 
-// Currently selected project
+// Currently selected project and category
 let g_activeProject = "all";
+let g_activeCategory = "all";
 const sortController = (project) => {
   if (project === "all") {
-    // Merging all task into one array
     const taskArr = [];
+    // Merging all task into one array
     for (const project of allProject) {
       for (const task of project.task) {
         taskArr.push(task);
@@ -36,15 +48,39 @@ const sortController = (project) => {
         completedTaskArr.push(task);
       }
     }
-    DOM.sortTask(taskArr, completedTaskArr);
+    DOM.sortTask(categoryFilter(taskArr), categoryFilter(completedTaskArr));
   } else {
-    DOM.sortTask(project.task, project.completedTasks);
+    DOM.sortTask(
+      categoryFilter(project.task),
+      categoryFilter(project.completedTasks)
+    );
+  }
+};
+const categoryFilter = (arr) => {
+  if (g_activeCategory === "all") {
+    return arr;
+  } else {
+    return arr.filter((el) => dateFnsScope[g_activeCategory](el._date));
   }
 };
 
+// Main event listener
 sortSelect.addEventListener("change", () => {
   sortController(g_activeProject);
 });
+
+categoryBtns.forEach((el) => {
+  el.addEventListener("click", (e) => {
+    // Remove active class when clicking other category
+    for (const btn of categoryBtns) {
+      btn.classList.remove("active");
+    }
+    e.target.classList.add("active");
+    g_activeCategory = el.dataset.category;
+    sortController(g_activeProject);
+  });
+});
+
 newTaskBtn.addEventListener("click", () => {
   if (allProject.length === 0) {
     alert("You need to have at least 1 project!");
@@ -57,6 +93,7 @@ newTaskBtn.addEventListener("click", () => {
   dialog.appendChild(DOM.modal.createTask());
   dialog.showModal();
 });
+
 newProjectBtn.addEventListener("click", () => {
   dialog.innerHTML = "";
   dialog.appendChild(DOM.modal.createProjectForm());
@@ -296,7 +333,6 @@ const DOM = (() => {
           );
         }
       });
-      console.log(project.task);
     }
   };
   const editTask = (task) => {

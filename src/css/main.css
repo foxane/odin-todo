@@ -8,6 +8,7 @@
   --clr-nav-btn: #07578b;
   --clr-accent: #00ccff;
   --clr-complete-grad: #189ff8;
+  --clr-input-bg: #70e2ff;
 
   --clr-prio-low: rgb(0, 255, 0);
   --clr-prio-medium: rgb(255, 255, 0);
@@ -48,9 +49,6 @@ header {
 
   background-color: var(--clr-header-bg);
   box-shadow: -5px 5px 10px -5px rgb(0, 0, 0);
-  border-radius: 5px;
-  border-left: 1px solid rgba(0, 0, 0, 0.747);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.747);
 }
 header h1 {
   vertical-align: middle;
@@ -61,15 +59,21 @@ header .category {
   align-items: center;
   gap: 1.3rem;
 }
-header .category .category-btn {
+.category-btn {
   padding: 5px 10px;
   border-radius: 5px;
   transition: background 0.25s;
   font-weight: 600;
+  border: 2px solid transparent;
 }
 /* HEADER.HOVER */
-header .category > .category-btn:hover {
+.category-btn:hover {
   background-color: var(--clr-accent);
+}
+/* Actice state */
+.category-btn.active {
+  background-color: var(--clr-accent);
+  border: 2px solid white;
   font-style: italic;
 }
 
@@ -116,6 +120,15 @@ aside .project-content {
   opacity: 1;
 }
 .project-btn:hover {
+  background-color: var(--clr-accent);
+  color: rgb(250, 234, 11);
+}
+.all-project-btn {
+  display: block;
+  text-align: center;
+  font-weight: 600;
+}
+.project-btn.active {
   background-color: var(--clr-accent);
   color: rgb(250, 234, 11);
 }
@@ -322,10 +335,10 @@ form select {
   margin: 0 2rem;
   padding: 5px;
 
-  background-color: #70e2ff;
+  background-color: var(--clr-input-bg);
   font-size: 1.1rem;
   font-family: inherit;
-  border: none;
+  border: 3px solid transparent;
   border-radius: 2px;
 
   resize: none;
@@ -373,4 +386,16 @@ dialog::backdrop {
 }
 .cursor-disabled {
   cursor: not-allowed;
+}
+.required-effect {
+  border: 3px solid red;
+}
+
+@keyframes required-animation {
+  0% {
+    background-color: red;
+  }
+  100% {
+    background-color: var(--clr-input-bg);
+  }
 }
