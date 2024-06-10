@@ -4,8 +4,9 @@ import {
   isThisWeek,
   isThisMonth,
 } from "date-fns";
-import { allProject } from "./index";
+import { init as allProject } from "./index";
 import { Project, Task } from "./project";
+import { setData } from "./local-storage";
 export { DOM, domInterface, sortController };
 
 const PRIO_LIST = ["undefined", "low", "medium", "high"];
@@ -27,7 +28,7 @@ const categoryBtns = document.querySelectorAll(".category-btn");
 
 // TODO: Move completed task to bottom of the list (done, but need to update tasklist for this to take effect) find a better way
 // TODO: Add localStorage interface
-// TODO: Delete today, week, month button
+// TODO: Refacor DOM api into single factory functions, it is hard, but can cut your code into more than half, goodluck
 
 // Currently selected project and category
 let g_activeProject = "all";
@@ -37,7 +38,7 @@ const sortController = (project) => {
     const taskArr = [];
     // Merging all task into one array
     for (const project of allProject) {
-      for (const task of project.task) {
+      for (const task of project.tasks) {
         taskArr.push(task);
       }
     }
@@ -51,7 +52,7 @@ const sortController = (project) => {
     DOM.sortTask(categoryFilter(taskArr), categoryFilter(completedTaskArr));
   } else {
     DOM.sortTask(
-      categoryFilter(project.task),
+      categoryFilter(project.tasks),
       categoryFilter(project.completedTasks)
     );
   }
@@ -303,8 +304,9 @@ const DOM = (() => {
         if (task) {
           // Find parent object from task
           const parentProjectIndex = allProject.findIndex((project) =>
-            project.task.some((taskItem) => taskItem.id === task.id)
+            project.tasks.some((taskItem) => taskItem.id === task.id)
           );
+          console.log(allProject);
           allProject[parentProjectIndex].completeTask(task);
         }
         taskCard.classList.add("complete");
@@ -316,7 +318,7 @@ const DOM = (() => {
     console.log(task);
     for (const project of allProject) {
       // Delete not completed task
-      project.task.forEach((el) => {
+      project.tasks.forEach((el) => {
         if (task.id == el.id) {
           project.removeTask(task);
           tasksView.removeChild(
@@ -500,7 +502,7 @@ const DOM = (() => {
         if (task) {
           // Find parent object from task
           const parentProjectIndex = allProject.findIndex((project) =>
-            project.task.some((taskItem) => taskItem.id === task.id)
+            project.tasks.some((taskItem) => taskItem.id === task.id)
           );
           if (parentProjectIndex === index) {
             // Select the correct index
@@ -596,22 +598,22 @@ const domInterface = (() => {
 
   // Edit Task
   const editTask = (title, desc, dueDate, priority, parentProject, task) => {
-    const index = parentProject.task.indexOf(task);
+    const index = parentProject.tasks.indexOf(task);
     const completedIndex = parentProject.completedTasks.indexOf(task);
     console.log(index, completedIndex);
     // Edit not completed task
     if (index !== -1) {
-      parentProject.task[index].title = title;
-      parentProject.task[index].desc = desc;
-      parentProject.task[index].dueDate = dueDate;
-      parentProject.task[index].priority = priority;
+      parentProject.tasks[index].title = title;
+      parentProject.tasks[index].desc = desc;
+      parentProject.tasks[index].dueDate = dueDate;
+      parentProject.tasks[index].priority = priority;
       sortController(parentProject);
     } else {
       // Edit completed task
-      parentProject.task[completedIndex].title = title;
-      parentProject.task[completedIndex].desc = desc;
-      parentProject.task[completedIndex].dueDate = dueDate;
-      parentProject.task[completedIndex].priority = priority;
+      parentProject.tasks[completedIndex].title = title;
+      parentProject.tasks[completedIndex].desc = desc;
+      parentProject.tasks[completedIndex].dueDate = dueDate;
+      parentProject.tasks[completedIndex].priority = priority;
       sortController(parentProject);
     }
   };

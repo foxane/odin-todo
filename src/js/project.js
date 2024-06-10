@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 // Project
 class Project {
   static projectList = [];
-  task = [];
+  tasks = [];
   completedTasks = [];
 
   constructor(name) {
@@ -24,13 +24,18 @@ class Project {
   // Add and remove task from task arr
   // Both of this must be called from project instance they are on
   addTask(newTask) {
-    this.task.push(newTask);
-    newTask.index = this.task.indexOf(newTask);
+    this.tasks.push(newTask);
+    newTask.index = this.tasks.indexOf(newTask);
   }
   removeTask(toRemove) {
-    const index = this.task.findIndex((task) => task.id === toRemove.id);
+    const index = this.tasks.findIndex((task) => task.id === toRemove.id);
+    const completedIndex = this.completedTasks.findIndex(
+      (completedTask) => completedTask.id === toRemove.id
+    );
     if (index !== -1) {
-      this.task.splice(index, 1);
+      this.tasks.splice(index, 1);
+    } else if (completedIndex !== -1) {
+      this.completedTasks.splice(completedIndex, 1);
     }
   }
   completeTask(taskToComplete) {
@@ -38,9 +43,17 @@ class Project {
     this.removeTask(taskToComplete);
     this.completedTasks.push(taskToComplete);
   }
+
+  // Serialize project instance
+  toJSON() {
+    return {
+      name: this.name,
+      id: this.id,
+      tasks: this.tasks.map((task) => task.toJSON()),
+    };
+  }
 }
 
-// TODO: Add completed task functionality and logic
 class Task {
   constructor(title, desc, dueDate, priority = 1) {
     this.title = title;
@@ -49,5 +62,16 @@ class Task {
     this._date = new Date(dueDate).toISOString().split("T")[0]; // Convert date object to 'yyyy-mm-dd'
     this.priority = priority;
     this.id = uuidv4();
+  }
+
+  // Serialize task instance
+  toJSON() {
+    return {
+      title: this.title,
+      desc: this.desc,
+      dueDate: this.dueDate,
+      priority: this.priority,
+      id: this.id,
+    };
   }
 }
