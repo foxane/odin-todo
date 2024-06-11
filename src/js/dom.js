@@ -4,9 +4,9 @@ import {
   isThisWeek,
   isThisMonth,
 } from "date-fns";
-import { init as allProject } from "./index";
+import { allProject } from "./index";
 import { Project, Task } from "./project";
-import { setData } from "./local-storage";
+import { clearData, setData, updateLocalStorage } from "./local-storage";
 export { DOM, domInterface, sortController };
 
 const PRIO_LIST = ["undefined", "low", "medium", "high"];
@@ -61,6 +61,7 @@ const categoryFilter = (arr) => {
   if (g_activeCategory === "all") {
     return arr;
   } else {
+    // Sort by date
     return arr.filter((el) => dateFnsScope[g_activeCategory](el._date));
   }
 };
@@ -146,6 +147,9 @@ const DOM = (() => {
     icon.addEventListener("click", (e) => {
       e.stopPropagation();
       project.deleteSelf();
+      // TODO: fix local storage update
+      updateLocalStorage();
+      console.log(Project.projectList);
       projectsView.removeChild(projectDiv);
       sortController("all");
     });
@@ -247,7 +251,7 @@ const DOM = (() => {
     taskDiv.classList.add("task-card", PRIO_LIST[task.priority]);
     taskDiv.dataset.taskId = task.id;
     // Check if task is completed before this
-    if (task._completed) {
+    if (task.completed) {
       taskDiv.classList.add("complete");
       taskDiv.classList.add("completed-before");
     }
@@ -584,13 +588,7 @@ const domInterface = (() => {
   };
 
   // Create Task
-  const createTask = (
-    title,
-    desc = "Why didn't you give us description? Am i that worthless like our creator?",
-    dueDate,
-    priority,
-    parentProject
-  ) => {
+  const createTask = (title, desc, dueDate, priority, parentProject) => {
     const newTask = new Task(title, desc, dueDate, priority);
     parentProject.addTask(newTask);
     sortController(parentProject);

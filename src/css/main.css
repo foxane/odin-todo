@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 :root {
-  --clr-body-bg: #0965ee;
+  --clr-body-bg: #ffffff;
   --clr-header-bg: #189ff8;
   --clr-nav-bg: #189ff8;
   --clr-main-bg: #ffffff;
@@ -32,6 +32,7 @@ body {
   min-height: 100vh;
   width: 100%;
   gap: 10px;
+  background-color: var(--clr-body-bg);
 
   font-family: Poppins, Arial, Helvetica, sans-serif;
   font-size: 1.1rem;
@@ -164,7 +165,7 @@ main {
 .task-card {
   border: 2px solid rgb(170, 166, 166);
   border-radius: 2px 5px 5px 2px;
-  background-color: white;
+  background-color: var(--clr-main-bg);
   padding: 1rem 3rem 1rem 1rem;
   border-left: 10px solid;
   box-shadow: -5px 5px 5px 0px rgb(216, 214, 214);

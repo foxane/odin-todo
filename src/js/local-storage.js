@@ -1,41 +1,27 @@
 import { defaultData } from "./default-data";
 import { Project, Task } from "./project";
-export { getData, setData, setDefaultData };
+export { refreshInstance, updateLocalStorage };
 
-// Retrieve data
-const getData = () => {
-  // Deserialize JSON in localStorage
-  const storedProjects = JSON.parse(localStorage.getItem("todo"));
-  if (!storedProjects) return "not found"; // Return an empty array if no data found
+// Retrive updated data
+const refreshInstance = () => {
+  Project.projectList.length = 0;
 
-  const deserializedProjects = storedProjects.map((project) => {
+  // Deserialize json into instances
+  const projectArr = JSON.parse(localStorage.getItem("data"));
+  for (const project of projectArr) {
     const deserializedProject = new Project(project.name);
-    project.tasks.forEach((task) => {
-      const deserializedTask = new Task(
-        task.title,
-        task.desc,
-        task.dueDate,
-        task.priority
-      );
-      deserializedProject.addTask(deserializedTask);
-    });
-    return deserializedProject;
-  });
-  console.log(deserializedProjects);
-  return deserializedProjects;
+    // Turn all element inside task to TAsk instances
+    deserializedProject.tasks.map(
+      (el) => new Task(el.title, el.desc, el.dueDate, el.priority, el.completed)
+    );
+    // For completed tasks
+    deserializedProject.completedTasks.map(
+      (el) => new Task(el.title, el.desc, el.dueDate, el.priority, el.completed)
+    );
+  }
 };
 
-// Sotoring data
-// User data
-const setData = () => {
-  const serializedProjects = Project.projectList.map((project) =>
-    project.toJSON()
-  );
-  localStorage.setItem("todo", JSON.stringify(serializedProjects));
-};
-
-// Default data
-const setDefaultData = () => {
-  const serializedDefault = defaultData.map((project) => project.toJSON());
-  localStorage.setItem("todo", JSON.stringify(serializedDefault));
+// Save updated data after each changes
+const updateLocalStorage = () => {
+  localStorage.setItem("data", JSON.stringify(Project.projectList));
 };
