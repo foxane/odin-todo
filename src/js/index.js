@@ -1,26 +1,22 @@
 import { Project, Task } from "./project";
 import { DOM, domInterface, sortController } from "./dom";
 import "../css/main.css";
-import { refreshInstance } from "./local-storage";
+import { refreshInstance, updateLocalStorage } from "./local-storage";
 import { defaultData } from "./default-data";
-export { allProject };
-
-let allProject;
 
 // Init
 if (localStorage.getItem("data")) {
-  console.log(typeof localStorage.getItem("data"));
-  init(Project.projectList);
+  console.log("data found");
+  init();
 } else {
   console.log("data not found");
-  init(defaultData);
+  Project.projectList = defaultData;
+  updateLocalStorage();
+  init();
 }
 
-function init(value) {
+function init() {
   refreshInstance();
-  allProject = value;
-  DOM.updateProjectList(allProject);
+  DOM.updateProjectList(Project.projectList);
   sortController("all");
 }
-
-console.log(localStorage.getItem("data"));

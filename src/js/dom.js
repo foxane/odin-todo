@@ -4,7 +4,6 @@ import {
   isThisWeek,
   isThisMonth,
 } from "date-fns";
-import { allProject } from "./index";
 import { Project, Task } from "./project";
 import { clearData, setData, updateLocalStorage } from "./local-storage";
 export { DOM, domInterface, sortController };
@@ -35,16 +34,17 @@ let g_activeProject = "all";
 let g_activeCategory = "all";
 const sortController = (project) => {
   if (project === "all") {
+    console.log("sort called");
     const taskArr = [];
     // Merging all task into one array
-    for (const project of allProject) {
+    for (const project of Project.projectList) {
       for (const task of project.tasks) {
         taskArr.push(task);
       }
     }
     // Merge completed task
     const completedTaskArr = [];
-    for (const project of allProject) {
+    for (const project of Project.projectList) {
       for (const task of project.completedTasks) {
         completedTaskArr.push(task);
       }
@@ -84,7 +84,7 @@ categoryBtns.forEach((el) => {
 });
 
 newTaskBtn.addEventListener("click", () => {
-  if (allProject.length === 0) {
+  if (Project.projectList.length === 0) {
     alert("You need to have at least 1 project!");
     dialog.innerHTML = "";
     dialog.appendChild(DOM.modal.createProjectForm());
@@ -104,7 +104,7 @@ newProjectBtn.addEventListener("click", () => {
 
 const DOM = (() => {
   // Project
-  const updateProjectList = (allProject) => {
+  const updateProjectList = (projectList) => {
     projectsView.innerHTML = ``;
 
     // Create 'All Project' button
@@ -126,7 +126,7 @@ const DOM = (() => {
     });
 
     // Iterate project list
-    for (const project of allProject) {
+    for (const project of Project.projectList) {
       projectsView.appendChild(createProjectDiv(project));
     }
   };
@@ -172,7 +172,7 @@ const DOM = (() => {
   };
 
   // Tasks
-  //Sort task list, require allTask array(all project.task combined into one) NOT allProject!
+  //Sort task list, require allTask array(all project.task combined into one) NOT Project.projectList!
   const sortTask = (taskArr, completedTaskArr) => {
     const sortVal = sortSelect.value;
     if (sortVal === "priority") {
@@ -307,20 +307,22 @@ const DOM = (() => {
           return;
         if (task) {
           // Find parent object from task
-          const parentProjectIndex = allProject.findIndex((project) =>
+          const parentProjectIndex = Project.projectList.findIndex((project) =>
             project.tasks.some((taskItem) => taskItem.id === task.id)
           );
-          console.log(allProject);
-          allProject[parentProjectIndex].completeTask(task);
+          Project.projectList[parentProjectIndex].completeTask(task);
+          console.log(Project.projectList[parentProjectIndex].completedTasks);
         }
         taskCard.classList.add("complete");
       }
     }
+    // Update localStorage
+    updateLocalStorage();
   };
 
   const deleteTask = (task) => {
     console.log(task);
-    for (const project of allProject) {
+    for (const project of Project.projectList) {
       // Delete not completed task
       project.tasks.forEach((el) => {
         if (task.id == el.id) {
@@ -340,12 +342,16 @@ const DOM = (() => {
         }
       });
     }
+    // Update localStorage
+    updateLocalStorage();
   };
   const editTask = (task) => {
     dialog.innerHTML = "";
     dialog.classList.remove(".create-project");
     dialog.appendChild(DOM.modal.editTask(task));
     dialog.showModal();
+    // Update localStorage
+    updateLocalStorage();
   };
 
   const modal = {
@@ -497,7 +503,7 @@ const DOM = (() => {
 
       // Create Select element and assigb default value
       // TODO: FIX THIS DISGUSTING MESS
-      const parents = allProject;
+      const parents = Project.projectList;
       for (const [index, parent] of parents.entries()) {
         const option = document.createElement("option");
         option.value = index;
@@ -505,7 +511,7 @@ const DOM = (() => {
         // Edit
         if (task) {
           // Find parent object from task
-          const parentProjectIndex = allProject.findIndex((project) =>
+          const parentProjectIndex = Project.projectList.findIndex((project) =>
             project.tasks.some((taskItem) => taskItem.id === task.id)
           );
           if (parentProjectIndex === index) {
@@ -518,7 +524,7 @@ const DOM = (() => {
             // Selected project is all
             parentSelect.appendChild(option);
           } else {
-            if (allProject.indexOf(g_activeProject) === index) {
+            if (Project.projectList.indexOf(g_activeProject) === index) {
               // Selected project
               option.selected = true;
             }
@@ -553,7 +559,7 @@ const DOM = (() => {
             taskDescTextarea.value,
             new Date(dueDateInput.value),
             prioritySelect.value,
-            allProject[parentSelect.value]
+            Project.projectList[parentSelect.value]
           );
         } else if (type === "edit") {
           domInterface.editTask(
@@ -561,7 +567,8 @@ const DOM = (() => {
             taskDescTextarea.value,
             new Date(dueDateInput.value),
             prioritySelect.value,
-            allProject[parentSelect.value],
+            task.completed,
+            Project.projectList[parentSelect.value],
             task
           );
         }
@@ -583,8 +590,9 @@ const domInterface = (() => {
   // Create Project
   const createProject = (projectName) => {
     new Project(projectName);
-    DOM.updateProjectList(allProject);
-    console.log(allProject);
+    DOM.updateProjectList(Project.projectList);
+    // Update localStorage
+    updateLocalStorage();
   };
 
   // Create Task
@@ -592,15 +600,26 @@ const domInterface = (() => {
     const newTask = new Task(title, desc, dueDate, priority);
     parentProject.addTask(newTask);
     sortController(parentProject);
+    // Update localStorage
+    updateLocalStorage();
   };
 
   // Edit Task
-  const editTask = (title, desc, dueDate, priority, parentProject, task) => {
+  const editTask = (
+    title,
+    desc,
+    dueDate,
+    priority,
+    completed,
+    parentProject,
+    task
+  ) => {
     const index = parentProject.tasks.indexOf(task);
     const completedIndex = parentProject.completedTasks.indexOf(task);
-    console.log(index, completedIndex);
+    console.log(completed);
     // Edit not completed task
-    if (index !== -1) {
+    if (!completed) {
+      console.log("Not completed index :", index);
       parentProject.tasks[index].title = title;
       parentProject.tasks[index].desc = desc;
       parentProject.tasks[index].dueDate = dueDate;
@@ -608,12 +627,15 @@ const domInterface = (() => {
       sortController(parentProject);
     } else {
       // Edit completed task
+      console.log("Completed index :", completedIndex);
       parentProject.tasks[completedIndex].title = title;
       parentProject.tasks[completedIndex].desc = desc;
       parentProject.tasks[completedIndex].dueDate = dueDate;
       parentProject.tasks[completedIndex].priority = priority;
       sortController(parentProject);
     }
+    // Update localStorage
+    updateLocalStorage();
   };
 
   //

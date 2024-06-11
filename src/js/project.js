@@ -34,6 +34,7 @@ class Project {
       (completedTask) => completedTask.id === toRemove.id
     );
     if (index !== -1) {
+      console.log(index);
       this.tasks.splice(index, 1);
     } else if (completedIndex !== -1) {
       this.completedTasks.splice(completedIndex, 1);

@@ -3,6 +3,7 @@ import { Project, Task } from "./project";
 export { refreshInstance, updateLocalStorage };
 
 // Retrive updated data
+// This only need to be called once when the page load
 const refreshInstance = () => {
   Project.projectList.length = 0;
 
@@ -10,14 +11,30 @@ const refreshInstance = () => {
   const projectArr = JSON.parse(localStorage.getItem("data"));
   for (const project of projectArr) {
     const deserializedProject = new Project(project.name);
-    // Turn all element inside task to TAsk instances
-    deserializedProject.tasks.map(
-      (el) => new Task(el.title, el.desc, el.dueDate, el.priority, el.completed)
-    );
+    // Turn all element inside task to Task instances
+    for (const task of project.tasks) {
+      const refreshedTask = new Task(
+        task.title,
+        task.desc,
+        task.dueDate,
+        task.priority,
+        task.completed
+      );
+      // Append task into taskArr
+      deserializedProject.addTask(refreshedTask);
+    }
+
     // For completed tasks
-    deserializedProject.completedTasks.map(
-      (el) => new Task(el.title, el.desc, el.dueDate, el.priority, el.completed)
-    );
+    for (const task of project.completedTasks) {
+      const refreshedTask = new Task(
+        task.title,
+        task.desc,
+        task.dueDate,
+        task.priority,
+        task.completed
+      );
+      deserializedProject.addCompletedTask(refreshedTask);
+    }
   }
 };
 
