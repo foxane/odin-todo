@@ -311,7 +311,7 @@ const DOM = (() => {
             project.tasks.some((taskItem) => taskItem.id === task.id)
           );
           Project.projectList[parentProjectIndex].completeTask(task);
-          console.log(Project.projectList[parentProjectIndex].completedTasks);
+          console.log(Project.projectList[parentProjectIndex]);
         }
         taskCard.classList.add("complete");
       }
@@ -346,6 +346,7 @@ const DOM = (() => {
     updateLocalStorage();
   };
   const editTask = (task) => {
+    if (task.completed) return;
     dialog.innerHTML = "";
     dialog.classList.remove(".create-project");
     dialog.appendChild(DOM.modal.editTask(task));
@@ -508,32 +509,21 @@ const DOM = (() => {
         const option = document.createElement("option");
         option.value = index;
         option.textContent = parent.name;
-        // Edit
-        if (task) {
-          // Find parent object from task
-          const parentProjectIndex = Project.projectList.findIndex((project) =>
-            project.tasks.some((taskItem) => taskItem.id === task.id)
-          );
-          if (parentProjectIndex === index) {
-            // Select the correct index
-            option.selected = true;
-          }
-          // Create
+        if (g_activeProject === "all") {
+          // Selected project is all
+          parentSelect.appendChild(option);
         } else {
-          if (g_activeProject === "all") {
-            // Selected project is all
-            parentSelect.appendChild(option);
-          } else {
-            if (Project.projectList.indexOf(g_activeProject) === index) {
-              // Selected project
-              option.selected = true;
-            }
+          if (Project.projectList.indexOf(g_activeProject) === index) {
+            // Selected project
+            option.selected = true;
           }
         }
         parentSelect.appendChild(option);
       }
-      parentLabel.appendChild(parentSelect);
-      form.appendChild(parentLabel);
+      if (!task) {
+        parentLabel.appendChild(parentSelect);
+        form.appendChild(parentLabel);
+      }
 
       // Create submit button
       const submitButton = document.createElement("button");
@@ -616,6 +606,7 @@ const domInterface = (() => {
   ) => {
     const index = parentProject.tasks.indexOf(task);
     const completedIndex = parentProject.completedTasks.indexOf(task);
+    console.log(parentProject.completedTasks);
     console.log(completed);
     // Edit not completed task
     if (!completed) {
@@ -624,14 +615,6 @@ const domInterface = (() => {
       parentProject.tasks[index].desc = desc;
       parentProject.tasks[index].dueDate = dueDate;
       parentProject.tasks[index].priority = priority;
-      sortController(parentProject);
-    } else {
-      // Edit completed task
-      console.log("Completed index :", completedIndex);
-      parentProject.tasks[completedIndex].title = title;
-      parentProject.tasks[completedIndex].desc = desc;
-      parentProject.tasks[completedIndex].dueDate = dueDate;
-      parentProject.tasks[completedIndex].priority = priority;
       sortController(parentProject);
     }
     // Update localStorage
