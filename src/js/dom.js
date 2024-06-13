@@ -1,19 +1,15 @@
 /* REFACTORED CODES */
-import {
-  formatDistanceToNow,
-  isToday,
-  isThisWeek,
-  isThisMonth,
-} from "date-fns";
+import { isToday, isThisWeek, isThisMonth } from "date-fns";
 import { elementFactory, modal } from "./dom-create";
 import { Project, Task } from "./project";
-import { clearData, setData, updateLocalStorage } from "./local-storage";
+import { updateLocalStorage } from "./local-storage";
 export {
   updateUi,
   templateEl,
   selectedProject,
   setSelectedProject,
   timePeriod,
+  domInterface,
 };
 
 // Make their own scope to call it from string
@@ -166,7 +162,7 @@ const domInterface = (() => {
   // Create Project
   const createProject = (projectName) => {
     new Project(projectName);
-    DOM.updateProjectList(Project.projectList);
+    updateUi.project(Project.projectList);
     // Update localStorage
     updateLocalStorage();
   };
@@ -181,25 +177,17 @@ const domInterface = (() => {
   };
 
   // Edit Task
-  const editTask = (
-    title,
-    desc,
-    dueDate,
-    priority,
-    completed,
-    parentProject,
-    task
-  ) => {
+  const editTask = (title, desc, dueDate, priority, parentProject, task) => {
     const index = parentProject.tasks.indexOf(task);
     // Edit not completed task
-    if (!completed) {
-      parentProject.tasks[index].title = title;
-      parentProject.tasks[index].desc = desc;
-      parentProject.tasks[index].dueDate = dueDate;
-      parentProject.tasks[index].priority = priority;
-      updateUi.task(parentProject);
-    }
-    // Update localStorage
+    console.log(parentProject, index);
+
+    parentProject.tasks[index].title = title;
+    parentProject.tasks[index].desc = desc;
+    parentProject.tasks[index].dueDate = dueDate;
+    parentProject.tasks[index].priority = priority;
+    updateUi.task(parentProject);
+
     updateLocalStorage();
   };
 

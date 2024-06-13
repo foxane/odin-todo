@@ -1,11 +1,13 @@
 import { Project, Task } from "./project";
-import { DOM, domInterface, sortController } from "./dom";
+// import { DOM, domInterface, sortController } from "./dom";
+import { updateUi } from "./dom";
 import "../css/main.css";
 import { refreshInstance, updateLocalStorage } from "./local-storage";
 import { defaultData } from "./default-data";
 
 // Init
-if (localStorage.getItem("data")) {
+// Check if local data exist, if they are empty, init default
+if (localStorage.getItem("data") && localStorage.getItem("data") !== "[]") {
   console.log("data found");
   init();
 } else {
@@ -17,6 +19,6 @@ if (localStorage.getItem("data")) {
 
 function init() {
   refreshInstance();
-  DOM.updateProjectList(Project.projectList);
-  sortController("all");
+  updateUi.project(Project.projectList);
+  updateUi.task("all");
 }

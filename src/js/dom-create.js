@@ -3,6 +3,7 @@ import {
   templateEl,
   selectedProject,
   setSelectedProject,
+  domInterface,
 } from "./dom";
 import { updateLocalStorage } from "./local-storage";
 import { formatDistanceToNow } from "date-fns";
@@ -47,7 +48,6 @@ const elementFactory = (() => {
     icon.addEventListener("click", (e) => {
       e.stopPropagation();
       project.deleteSelf();
-      // TODO: fix local storage update
       updateLocalStorage();
       templateEl.projectsView.removeChild(projectDiv);
       updateUi.task("all");
@@ -120,7 +120,8 @@ const elementFactory = (() => {
     const p2 = document.createElement("p2");
     p2.textContent = "Dues in ";
     const strong = document.createElement("strong");
-    strong.textContent = formatDistanceToNow(task.dueDate);
+    strong.textContent = formatDistanceToNow(task._date);
+    strong.textContent += new Date() > new Date(task._date) ? " ago.. " : "";
     p2.appendChild(strong);
     taskDiv.appendChild(p2);
 
@@ -234,6 +235,7 @@ const modal = (() => {
     projectNameInput.setAttribute("id", "task-title");
     projectNameInput.setAttribute("placeholder", "Project names");
     projectNameInput.setAttribute("required", "true");
+    projectNameInput.setAttribute("autofocus", "true");
     form.appendChild(projectNameInput);
 
     // Create submit button
@@ -244,9 +246,11 @@ const modal = (() => {
     submitButton.addEventListener("click", (e) => {
       if (!projectNameInput.value) {
         alert("Huh? i thought you want to create a project..");
-        e.preventDefault();
+        projectNameInput.placeholder = "You type the name here, smart guy";
         return;
       }
+      e.preventDefault();
+      templateEl.dialog.close();
       domInterface.createProject(projectNameInput.value);
     });
     form.appendChild(submitButton);
@@ -357,26 +361,22 @@ const modal = (() => {
     parentSelect.setAttribute("id", "project-parent");
 
     // Create Select element and assigb default value
-    // TODO: FIX THIS DISGUSTING MESS
     const parents = Project.projectList;
     for (const [index, parent] of parents.entries()) {
       const option = document.createElement("option");
       option.value = index;
       option.textContent = parent.name;
-      if (selectedProject === "all") {
-        // Selected project is all
-        parentSelect.appendChild(option);
-      } else {
-        if (Project.projectList.indexOf(selectedProject) === index) {
-          // Selected project
-          option.selected = true;
+
+      // Check if this and edit, dont append project selections
+      if (!task) {
+        // Selecting current selected project
+        if (parent === selectedProject) {
+          option.selected = "true";
         }
+        parentSelect.appendChild(option);
+        parentLabel.appendChild(parentSelect);
+        form.appendChild(parentLabel);
       }
-      parentSelect.appendChild(option);
-    }
-    if (!task) {
-      parentLabel.appendChild(parentSelect);
-      form.appendChild(parentLabel);
     }
 
     // Create submit button
@@ -424,5 +424,3 @@ const modal = (() => {
 
   return { project, createTask, editTask, createTaskForm };
 })();
-
-// TODO: fix modal.project broken
