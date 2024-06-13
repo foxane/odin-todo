@@ -23,7 +23,7 @@ function createProjectWithTasks(projectName, taskNames) {
     ); // Generating a random due date within 30 days from now
     const task = new Task(
       taskName,
-      `Description for looawgur uaegu aeug aei uvu va ${taskName}`,
+      `Long description for '${taskName}', which is too much trouble to set individually, so here you go`,
       dueDate,
       priority
     );
